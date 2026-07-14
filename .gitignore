@@ -1,0 +1,3 @@
+scripts/add_license_header.py
+build
+pammain.c
