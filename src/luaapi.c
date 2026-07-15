@@ -1,5 +1,6 @@
 
 
+#include <SDL3/SDL_render.h>
 #include <SDL3/SDL_stdinc.h>
 #include <renderer.h>
 #include <luaapi.h>
@@ -7,6 +8,8 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include <util.h>
+#include <luaapi_renderer.h>
+
 lua_State* L;
 
 void Luaapi_executeFile(char* script_path)
@@ -21,50 +24,6 @@ void Luaapi_executeFile(char* script_path)
   }
 }
 
-int _finalize_renderer_surface(lua_State* L)
-{
-  Renderer_Surface* rsurf =
-    (Renderer_Surface*)luaL_checkudata(L, 1, LUAAPI_TYPENAME_RENDERER_SURFACE);
-  logi("released renderer surface %x",rsurf);
-  SDL_free(rsurf->surf);
-  return 0;
-}
-
-int _create_renderer_surface(lua_State* L)
-{
-  int w=luaL_checkinteger(L,1),h=luaL_checkinteger(L, 2);
-  Renderer_Surface* rsurf = 
-   (Renderer_Surface*)lua_newuserdata(L, sizeof(Renderer_Surface));
-  rsurf->surf=SDL_CreateSurface(w,h,SDL_PIXELFORMAT_ARGB8888);
-  // ?? rsurf
-
-  if(luaL_newmetatable(L,LUAAPI_TYPENAME_RENDERER_SURFACE)) // ?? rsurf table
-  {
-    lua_pushstring(L, "__gc"); // ?? rsurf table "__gc"
-    lua_pushcfunction(L, _finalize_renderer_surface); // ?? rsurf table "__gc" cfunc
-    lua_settable(L, -3); // ?? rsurf table
-  }
-
-  lua_setmetatable(L, -2); // ?? rsurf
-  logi("created renderer surface %x with size %d,%d",rsurf,w,h);
-  return 1;
-}
-
-void _register_renderer_surface()
-{
-  lua_pushcfunction(L, _create_renderer_surface);
-  lua_setfield(L, -2, "create_surface");
-}
-
-void Renderer_initLua()
-{
-  lua_newtable(L);
-
-  _register_renderer_surface();
-
-  lua_setfield(L, -2, "rend");
-}
-
 void Luaapi_initLua()
 {
   lua_newtable(L);
@@ -77,6 +36,7 @@ void Luaapi_initLua()
 void Luaapi_init()
 {
   L = luaL_newstate();
+  logi("L:%p",L);
   #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 504
   luaL_requiref(L, "", luaopen_base, 1);
   luaL_requiref(L, "", luaopen_package, 1);

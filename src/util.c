@@ -8,7 +8,7 @@ void logi(const char *fmt, ...)
   va_list ap;
 
 	va_start(ap, fmt);
-  SDL_Log(fmt,ap);
+  SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,fmt,ap);
 	va_end(ap);
 }
 void die(int code)

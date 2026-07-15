@@ -15,9 +15,6 @@
   with this program; if not, see <https://www.gnu.org/licenses/>.
 */
 
-
-
-
 #pragma once
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
@@ -33,10 +30,12 @@ typedef struct Renderer_InitInfo
 } Renderer_InitInfo;
 typedef struct Renderer_Texture {
   SDL_Texture* tex;
+  int w,h;
 } Renderer_Texture;
 
 typedef struct Renderer_Surface {
   SDL_Surface* surf;
+  int w,h;
 } Renderer_Surface;
 
 enum Renderer_Kind {
@@ -61,3 +60,9 @@ typedef struct Renderer_Object {
 void Renderer_init(struct Renderer_InitInfo iinfo);
 void Renderer_run();
 void Renderer_quit();
+void Renderer_loadImageAsTexture(Renderer_Texture* tex,const char* path);
+void Renderer_loadImageAsSurface(Renderer_Surface* surf,const char* path);
+void Renderer_createTexture(Renderer_Texture* tex,int w,int h);
+void Renderer_createSurface(Renderer_Surface* surf,int w,int h);
+void Renderer_freeTexture(Renderer_Texture* tex);
+void Renderer_freeSurface(Renderer_Surface* surf);

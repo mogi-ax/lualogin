@@ -90,7 +90,7 @@ void Renderer_run()
     }
     SDL_RenderClear(sdlRenderer);
 
-    
+
     SDL_RenderPresent(sdlRenderer);
   }
 }
@@ -102,6 +102,41 @@ void Renderer_quit()
   SDL_Quit();
 }
 
- // lua api ----------------------------------------------------------------------------
 
+void Renderer_loadImageAsTexture(Renderer_Texture* tex,const char* path)
+{
+  SDL_Surface* temp = SDL_LoadSurface(path);
+  tex->tex = SDL_CreateTextureFromSurface(sdlRenderer,temp);
+  tex->w = temp->w;
+  tex->h = temp->h;
+  SDL_DestroySurface(temp);
+}
+void Renderer_loadImageAsSurface(Renderer_Surface* surf,const char* path)
+{
+  surf->surf = SDL_LoadSurface(path);
+  surf->w = surf->surf->w;
+  surf->h = surf->surf->h;
+}
+void Renderer_createTexture(Renderer_Texture* tex,int w,int h)
+{
+  tex->tex = SDL_CreateTexture(sdlRenderer,
+    SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,w, h);
+  tex->w = tex->tex->w;
+  tex->h = tex->tex->h;
+}
+void Renderer_createSurface(Renderer_Surface* surf,int w,int h)
+{
+  Renderer_Surface* tex = surf; // im lazy
+  tex->surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ARGB8888);
+  tex->w = tex->surf->w;
+  tex->h = tex->surf->h;
+}
+void Renderer_freeSurface(Renderer_Surface* surf)
+{
+  SDL_DestroySurface(surf->surf);
+}
+void Renderer_freeTexture(Renderer_Texture* tex)
+{
+  SDL_DestroyTexture(tex->tex);
+}
 
